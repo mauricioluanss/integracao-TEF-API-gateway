@@ -1,0 +1,13 @@
+spring.application.name=
+
+#Credenciais de login
+CLIENT_ID=
+PAYER_USERNAME=
+PASSWORD=
+
+#minha URL de callback
+CALLBACK_URL=.../webhook
+
+#Endpoints Payer
+EP_PAGAMENTOS=
+EP_TOKEN=
