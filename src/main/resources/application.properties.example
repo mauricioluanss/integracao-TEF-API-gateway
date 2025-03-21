@@ -1,13 +1,13 @@
-spring.application.name=
+spring.application.name=apigateway
 
 #Credenciais de login
 CLIENT_ID=
 PAYER_USERNAME=
 PASSWORD=
 
-#minha URL de callback
+#Minha URL de callback
 CALLBACK_URL=.../webhook
 
-#Endpoints Payer
+#Endpoints da API de pagamento
 EP_PAGAMENTOS=
 EP_TOKEN=

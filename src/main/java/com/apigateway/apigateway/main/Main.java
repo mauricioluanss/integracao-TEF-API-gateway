@@ -3,7 +3,6 @@ package com.apigateway.apigateway.main;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-
 import java.io.IOException;
 
 @SpringBootApplication

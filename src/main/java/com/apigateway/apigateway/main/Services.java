@@ -2,7 +2,6 @@ package com.apigateway.apigateway.main;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,7 +9,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +84,9 @@ public class Services {
      */
     public void chamaPagamento(float v, String pm, String pt, String pmst)
             throws IOException, InterruptedException {
-        System.out.println("\nChamando Payer...");
+        System.out.println("Chamando Payer...\n");
+
+        System.out.println("<<<--- Requisição que está sendo da enviada da automação para a Payer --->>>\n" + body.bodyPagamento(v, pm, pt, pmst) + "\n"); //debug
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointPagamentos))
@@ -95,6 +95,8 @@ public class Services {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("<<<--- Resposta da Payer para o callback após receber a requisição enviada --->>>\n" + response.body() + "\n"); //debug
     }
 
     /**
@@ -106,6 +108,8 @@ public class Services {
     public void chamaCancelamento() throws IOException, InterruptedException {
         System.out.println("Chamando cancelamento...");
 
+        System.out.println("<<<--- Requisição que está sendo da enviada da automação para a Payer --->>>\n" + body.bodyCancelamento() + "\n"); //debug
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointPagamentos))
                 .headers("Content-Type", "application/json", "Authorization", "Bearer " + this.pegaToken())
@@ -113,5 +117,7 @@ public class Services {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("<<<--- Resposta da Payer para o callback após receber a requisição enviada --->>>\n" + response.body() + "\n"); //debug
     }
 }

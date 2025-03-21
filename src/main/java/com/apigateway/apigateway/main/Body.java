@@ -6,7 +6,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -54,12 +53,12 @@ public class Body {
         data.put("callbackUrl", callbackUrl);
         data.put("correlationId", correlationId.geraCorrelationId());
         data.put("flow", "SYNC");
-        data.put("automationName", "AUTOMACAO_TESTE");
+        data.put("automationName", "AUTOMACAO_TESTE"); //PODE ALTERAR
 
         Map<String, Object> receiver = new LinkedHashMap<>();
-        receiver.put("companyId", "000001");
-        receiver.put("storeId", "0025");
-        receiver.put("terminalId", "01");
+        receiver.put("companyId", "000001"); //PODE ALTERAR
+        receiver.put("storeId", "0025"); //PODE ALTERAR
+        receiver.put("terminalId", "01"); //PODE ALTERAR
         data.put("receiver", receiver);
 
         Map<String, Object> message = new LinkedHashMap<>();
