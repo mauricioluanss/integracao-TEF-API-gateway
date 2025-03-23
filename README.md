@@ -26,7 +26,7 @@ Este projeto implementa a lógica essencial para integrar um sistema de automaç
 
 ## 🧪 Simulação de Ambiente de Automação
 
-Para fins de teste e simulação, foi desenvolvido um menu interativo em terminal que emula o comportamento de uma automação comercial. Por meio deste menu, é possível informar o valor da venda e selecionar as opções de pagamento disponíveis.
+Para fins de teste e simulação, eu desenvolvi um menu interativo em terminal que emula o comportamento de uma automação comercial. Por meio deste menu, é possível informar o valor da venda e selecionar as opções de pagamento disponíveis.
 
 Para integração com um ambiente de automação real, basta remover os métodos relacionados ao menu interativo, uma vez que sua função é apenas ilustrativa.
 
