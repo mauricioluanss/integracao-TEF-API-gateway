@@ -32,7 +32,7 @@ Para integração com um ambiente de automação real, basta remover os métodos
 
 Também foi implementado um endpoint responsável por receber o payload de retorno da transação (callback).
 
-Durante os testes locais, foi utilizado o [Ngrok](https://ngrok.com/docs/getting-started/?os=windows) para expor a aplicação local (porta `8080`) por meio de uma URL pública acessível externamente.
+Eu utilizei o [Ngrok](https://ngrok.com/docs/getting-started/?os=windows) para expor a aplicação local (porta `8080`) para uma URL pública acessível externamente.
 
 ---
 
