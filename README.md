@@ -14,7 +14,7 @@ Este projeto implementa a lógica essencial para integrar um sistema de automaç
    - Um id único que identifica cada transação
 
 2. **Ativação do Checkout:**  
-   Ao receber a requisição, o Checkout é ativado e a transação é exibida na interface de pagamento.
+   Ao receber a requisição, o Checkout é ativado e a sobe na tela chamando a transação.
 
 3. **Processamento via Gateway de TEF:**  
    Após o cliente finalizar o pagamento, o Checkout envia uma requisição ao Gateway de TEF, que processa a transação e retorna um `payload` com os dados da resposta.
