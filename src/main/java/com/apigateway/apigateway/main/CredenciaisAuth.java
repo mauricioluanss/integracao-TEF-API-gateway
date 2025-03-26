@@ -30,6 +30,6 @@ public class CredenciaisAuth {
         credenciais.put("password", password);
 
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(retornaCredenciais());
+        return mapper.writeValueAsString(credenciais);
     }
 }
