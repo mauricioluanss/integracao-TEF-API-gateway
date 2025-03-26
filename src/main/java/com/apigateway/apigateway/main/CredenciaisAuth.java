@@ -1,8 +1,13 @@
 package com.apigateway.apigateway.main;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Classe para acesso às credenciais de login na API.
@@ -18,13 +23,13 @@ public class CredenciaisAuth {
     @Value("${PASSWORD}")
     private String password;
 
-    public String getClientId() {
-        return clientId;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public String getPassword() {
-        return password;
+    public String retornaCredenciais() throws JsonProcessingException {
+        Map<String, String> credenciais = new LinkedHashMap<>();
+        credenciais.put("clientId", clientId);
+        credenciais.put("username", username);
+        credenciais.put("password", password);
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(retornaCredenciais());
     }
 }

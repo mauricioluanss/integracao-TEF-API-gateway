@@ -24,7 +24,6 @@ public class Services {
      */
     @Value("${EP_TOKEN}")
     private String endpointToken;
-    //ll
 
     /**
      * A variável endpointPagamentos recebe de `application.properties` o endpoint
@@ -56,28 +55,21 @@ public class Services {
      * / cancelamento.
      */
     private String pegaToken() throws IOException, InterruptedException {
-        Map<String, String> credenciaisUsuario = new LinkedHashMap<>();
-        credenciaisUsuario.put("clientId", credenciaisAuth.getClientId());
-        credenciaisUsuario.put("username", credenciaisAuth.getUsername());
-        credenciaisUsuario.put("password", credenciaisAuth.getPassword());
-
-        ObjectMapper mapper = new ObjectMapper();
-        String credenciaisUsuarioJson = mapper.writeValueAsString(credenciaisUsuario);
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointToken))
                 .headers("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(credenciaisUsuarioJson))
+                .POST(HttpRequest.BodyPublishers.ofString(credenciaisAuth.retornaCredenciais()))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        JSONObject jsonObject = new JSONObject(response.body());
-        JSONObject authenticationResult = jsonObject.getJSONObject("AuthenticationResult");
-
-        return authenticationResult.getString("IdToken");
+        return capturaIdToken(response);
     }
 
+    public String capturaIdToken (HttpResponse<String> response) {
+        JSONObject jsonObject = new JSONObject(response.body());
+        JSONObject authenticationResult = jsonObject.getJSONObject("AuthenticationResult");
+        return authenticationResult.getString("IdToken");
+    }
 
     /**
      * Metodo para realizar a requisição de pagamento. Ele leva como parâmetros as
