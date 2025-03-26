@@ -21,7 +21,7 @@ public class CredenciaisAuth {
     @Value("${PAYER_USERNAME}")
     private String username;
     @Value("${PASSWORD}")
-    private String password;
+    private String password; 
 
     public String retornaCredenciais() throws JsonProcessingException {
         Map<String, String> credenciais = new LinkedHashMap<>();
