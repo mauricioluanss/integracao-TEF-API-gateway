@@ -62,21 +62,21 @@ public class Services {
         return capturaIdToken(response);
     }
 
+
     public String capturaIdToken (HttpResponse<String> response) {
         JSONObject jsonObject = new JSONObject(response.body());
         JSONObject authenticationResult = jsonObject.getJSONObject("AuthenticationResult");
         return authenticationResult.getString("IdToken");
     }
 
-    /**
-     * Metodo para realizar a requisição de pagamento. Ele leva como parâmetros as
-     * OCPOES DE PAGAMENTO, que serão capturadas na interação com o usuário em `MenuDeOpcoes`.
-     */
-    public void chamaPagamento(float v, String pm, String pt, String pmst)
-            throws IOException, InterruptedException {
-        System.out.println("Chamando Payer...\n");
 
-        System.out.println("<<<--- Requisição que está sendo da enviada da automação para a Payer --->>>\n" + body.bodyPagamento(v, pm, pt, pmst) + "\n"); //debug
+    /** Metodo para realizar a requisição de pagamento. Ele leva como parâmetros as OCPOES DE PAGAMENTO, que serão
+     * capturadas na interação com o usuário em `MenuDeOpcoes`.
+     */
+    public void chamaPagamento (float v, String pm, String pt, String pmst) throws IOException, InterruptedException {
+        System.out.println("Chamando Payer...\n");
+        System.out.println("Requisição que está sendo da enviada da automação para a Payer\n"+
+                body.bodyPagamento(v, pm, pt, pmst)+"\n"); //debug
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointPagamentos))
@@ -86,8 +86,10 @@ public class Services {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("<<<--- Resposta da Payer para o callback após receber a requisição enviada --->>>\n" + response.body() + "\n"); //debug
+        System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
+                response.body() + "\n"); //debug
     }
+
 
     /**
      * Metodo para realizar a requisição de cancelamento de pagamento. Ela não leva parâmetros.
@@ -96,9 +98,8 @@ public class Services {
      * da requisição, em `bodyCancelamento()`.
      */
     public void chamaCancelamento() throws IOException, InterruptedException {
-        System.out.println("Chamando cancelamento...");
-
-        System.out.println("<<<--- Requisição que está sendo da enviada da automação para a Payer --->>>\n" + body.bodyCancelamento() + "\n"); //debug
+        System.out.println("Requisição que está sendo da enviada da automação para a Payer\n" +
+                body.bodyCancelamento() + "\n"); //debug
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointPagamentos))
@@ -108,6 +109,7 @@ public class Services {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("<<<--- Resposta da Payer para o callback após receber a requisição enviada --->>>\n" + response.body() + "\n"); //debug
+        System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
+                response.body() + "\n"); //debug
     }
 }
