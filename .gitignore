@@ -6,7 +6,6 @@ application.properties
 .idea/
 test/
 HELP.md
-ngrok.exe
 .gitattributes
 
 

@@ -43,7 +43,7 @@ public class MenusDeOpcoes {
                     this.consultaTransacao();
                     break;
                 default:
-                    System.out.println("\nOpção inválida.");
+                    System.out.print("\nOpção inválida.");
             }
         } while (opcao != 3);
     }
@@ -68,10 +68,10 @@ public class MenusDeOpcoes {
                     this.consultaTransacao();
                     break;
                 case 4:
-                    System.out.println("\nVoltando ao menu anterior...");
+                    System.out.println("Voltando ao menu anterior...");
                     return;
                 default:
-                    System.out.println("\nOpção inválida.");
+                    System.out.println("Opção inválida.");
             }
         } while (opcao != 4);
     }
@@ -79,7 +79,7 @@ public class MenusDeOpcoes {
     private void consultaTransacao() throws IOException, InterruptedException {
         do {
             System.out.println("1) Consultar transação efetuada   0) Voltar:");
-            System.out.println("Digite a opção: ");
+            System.out.print("Digite a opção: ");
             opcao = sc.nextInt();
 
             switch (opcao) {
@@ -89,6 +89,7 @@ public class MenusDeOpcoes {
                     break;
                 case 0:
                     System.out.println("Voltando ao menu anterior...\n");
+                    break;
                 default:
                     System.out.println("Opção inválida\n");
             }
@@ -100,7 +101,7 @@ public class MenusDeOpcoes {
      */
     private float capturaValor() {
         sc.nextLine();
-        System.out.println("Digite o valor desejado: ");
+        System.out.print("Digite o valor desejado: ");
         float value = sc.nextFloat();
         return value;
     }
@@ -112,7 +113,7 @@ public class MenusDeOpcoes {
 
     private void credito() throws IOException, InterruptedException {
         float value = capturaValor();
-        System.out.println("1) A vista  2) Parcelado");
+        System.out.print("1) A vista  2) Parcelado");
         int opcao = sc.nextInt();
 
         if (opcao == 1)

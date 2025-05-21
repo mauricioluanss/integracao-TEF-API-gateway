@@ -15,31 +15,19 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Service
 public class Services {
-    /**
-     * A variável endpointToken recebe de `application.properties` o endpoint da API
-     * externa para realizar a autenticação do usuário e receber o idtoken.
-     */
+    // Endpoint para obter token de autenticação.
     @Value("${EP_TOKEN}")
     private String endpointToken;
 
-    /**
-     * A variável endpointPagamentos recebe de `application.properties` o endpoint
-     * da API externa para chamada de pagamentos / cancelamentos.
-     */
+    // Endpoint para chamar pagamentos.
     @Value("${EP_PAGAMENTOS}")
     private String endpointPagamentos;
 
-    /**
-     * Injeção de dependência da classe `Body` para acesso aos metodos de construção dos
-     * JSON para as requisições.
-     */
+    // Acesso aos metodos da classe Body.
     @Autowired
     private Body body;
 
-    /**
-     * Injeção de dependência da classe `CredenciaisAuth` para acesso aos metodos getters,
-     * para obter as credenciais de login.
-     */
+    // Acesso ao metodo que retorna as credenciais de login.
     @Autowired
     private CredenciaisAuth credenciaisAuth;
 
@@ -62,7 +50,12 @@ public class Services {
         return capturaIdToken(response);
     }
 
-
+    /**
+     * Transforma o parametro em objeto json, encontra a chave que guarda o IdToken
+     *
+     * @param response É o body completo que vem da response da função 'pegaToken'.
+     * @return Retorna apenas o IdToken.
+     */
     public String capturaIdToken (HttpResponse<String> response) {
         JSONObject jsonObject = new JSONObject(response.body());
         JSONObject authenticationResult = jsonObject.getJSONObject("AuthenticationResult");
@@ -86,8 +79,8 @@ public class Services {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
-                response.body() + "\n"); //debug
+        /*System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
+                response.body() + "\n"); //debug*/
     }
 
 
@@ -109,7 +102,7 @@ public class Services {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
-                response.body() + "\n"); //debug
+        /*System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
+                response.body() + "\n"); //debug*/
     }
 }
