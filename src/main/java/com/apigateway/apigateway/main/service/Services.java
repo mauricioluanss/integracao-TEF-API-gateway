@@ -17,30 +17,21 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Service
 public class Services {
-    // Endpoint para obter token de autenticação.
-    @Value("${EP_TOKEN}")
+    @Value("${EP_TOKEN}") // Endpoint para obter token de autenticação.
     private String endpointToken;
 
-    // Endpoint para chamar pagamentos.
-    @Value("${EP_PAGAMENTOS}")
+    @Value("${EP_PAGAMENTOS}") // Endpoint para chamar pagamentos.
     private String endpointPagamentos;
 
-    // Acesso aos metodos da classe Body.
     @Autowired
-    private Body body;
+    private Body body; // Acesso aos metodos da classe Body.
 
-    // Acesso ao metodo que retorna as credenciais de login.
     @Autowired
-    private CredenciaisAuth credenciaisAuth;
+    private CredenciaisAuth credenciaisAuth; // Acesso ao metodo que retorna as credenciais de login.
 
     HttpClient client = HttpClient.newHttpClient();
 
-
-    /**
-     * Metodo para realizar autenticação do usuário. A autenticação é necessária para que
-     * se obtenha o idtoken. O idtoken extraído irá como header nas requisições de pagamento
-     * / cancelamento.
-     */
+    //Autentica o usuário e retorna o token
     private String pegaToken() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointToken))
@@ -52,26 +43,18 @@ public class Services {
         return capturaIdToken(response);
     }
 
-    /**
-     * Transforma o parametro em objeto json, encontra a chave que guarda o IdToken
-     *
-     * @param response É o body completo que vem da response da função 'pegaToken'.
-     * @return Retorna apenas o IdToken.
-     */
+    // Extrai o campo "IdToken" do corpo da resposta JSON de autenticação.
     public String capturaIdToken (HttpResponse<String> response) {
         JSONObject jsonObject = new JSONObject(response.body());
         JSONObject authenticationResult = jsonObject.getJSONObject("AuthenticationResult");
         return authenticationResult.getString("IdToken");
     }
 
-
     /** Metodo para realizar a requisição de pagamento. Ele leva como parâmetros as OCPOES DE PAGAMENTO, que serão
      * capturadas na interação com o usuário em `MenuDeOpcoes`.
      */
     public void chamaPagamento (float v, String pm, String pt, String pmst) throws IOException, InterruptedException {
         System.out.println("Chamando Payer...\n");
-        System.out.println("Requisição que está sendo da enviada da automação para a Payer\n"+
-                body.bodyPagamento(v, pm, pt, pmst)+"\n"); //debug
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointPagamentos))
@@ -84,7 +67,6 @@ public class Services {
         /*System.out.println("Resposta da Payer para o callback após receber a requisição enviada\n" +
                 response.body() + "\n"); //debug*/
     }
-
 
     /**
      * Metodo para realizar a requisição de cancelamento de pagamento. Ela não leva parâmetros.
