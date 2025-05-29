@@ -1,6 +1,6 @@
-package com.apigateway.apigateway.main;
+package com.apigateway.apigateway.main.controller;
 
-import org.json.JSONException;
+import com.apigateway.apigateway.main.entity.Payload;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

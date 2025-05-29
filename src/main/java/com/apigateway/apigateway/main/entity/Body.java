@@ -1,8 +1,8 @@
-package com.apigateway.apigateway.main;
+package com.apigateway.apigateway.main.entity;
 
+import com.apigateway.apigateway.main.utils.CorrelationId;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,10 @@ public class Body {
      * aplicação.
      * Exemplo de valores: (10.99f, "CARD", "DEBIT", "FULL_PAYMENT").
      */
-    public String bodyPagamento(float value, String paymentMethod, String paymentType, String paymentMethodSubType)
+    public String bodyPagamento(float value,
+                                String paymentMethod,
+                                String paymentType,
+                                String paymentMethodSubType)
             throws JsonProcessingException {
 
         Map<String, Object> body = new LinkedHashMap<>();
@@ -73,30 +76,6 @@ public class Body {
 
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(body);
-        /* Modelo de body requisicao de pag usado no Postman.
-         * {
-         *     "type": "INPUT",
-         *     "origin": "MAURICIO POSTMAN",
-         *     "data": {
-         *         "callbackUrl": "http://localhost:8080/callback",
-         *         "correlationId": "4f5b65-asdas6-fefd6-fff78121",
-         *         "flow": "SYNC",
-         *         "automationName": "Nome da automação",
-         *         "receiver": {
-         *             "companyId": "CONTA",
-         *             "storeId": "LOJA",
-         *             "terminalId": "TERMINAL"
-         *         },
-         *         "message": {
-         *             "command": "PAYMENT",
-         *             "value": 1,
-         *             "paymentMethod": "PIX",
-         *             "paymentType": "DEBIT",
-         *             "paymentMethodSubType": "FULL_PAYEMENT"
-         *         }
-         *     }
-         * }
-         */
     }
 
     /**

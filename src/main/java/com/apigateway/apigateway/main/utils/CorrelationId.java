@@ -1,4 +1,4 @@
-package com.apigateway.apigateway.main;
+package com.apigateway.apigateway.main.utils;
 
 import java.util.UUID;
 

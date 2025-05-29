@@ -1,5 +1,7 @@
-package com.apigateway.apigateway.main;
+package com.apigateway.apigateway.main.service;
 
+import com.apigateway.apigateway.main.entity.Body;
+import com.apigateway.apigateway.main.entity.CredenciaisAuth;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URI;
