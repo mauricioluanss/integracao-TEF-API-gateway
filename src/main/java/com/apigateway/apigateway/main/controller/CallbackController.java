@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/webhook")
 public class CallbackController {
+
     @Autowired
     private Payload manipulacaoPayload;
 

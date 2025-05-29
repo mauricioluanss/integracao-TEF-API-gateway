@@ -14,17 +14,9 @@ import java.util.Scanner;
  */
 @Component
 public class MenusDeOpcoes {
-    /**
-     * Injeção de dependência da classe `Services` para acesso aos metodos das
-     * requisições.
-     */
     @Autowired
     private Services services;
 
-    /**
-     * Injeção de dependência da classe `Payload` para acesso ao metodo getter
-     * e poder retornar o conteúdo do paylaod da transação.
-     */
     @Autowired
     private Payload manipulacaoPayload;
 
@@ -99,9 +91,6 @@ public class MenusDeOpcoes {
         } while (opcao != 0);
     }
 
-    /**
-     * Metodo para capturar o valor da transação.
-     */
     private float capturaValor() {
         sc.nextLine();
         System.out.print("Digite o valor desejado: ");

@@ -16,24 +16,13 @@ import java.util.Map;
  */
 @Component
 public class Body {
-    /**
-     * A variável `callbackUrl` recebe do arquivo `application.properties` a URL de
-     * callback.
-     */
+
     @Value("${CALLBACK_URL}")
     private String callbackUrl;
 
-    /**
-     * Injeção de dependência da classe Payload para obter o id da transação,
-     * e mandar no body de cancelamento.
-     */
     @Autowired
     private Payload manipulacaoPayload;
 
-    /**
-     * Instancia a classe `CorrelationId` para uso do metodo que irá gerar o id correlatiion da transação.
-     * Será encaminhada no body de pagamento e cancelamento.
-     */
     CorrelationId correlationId = new CorrelationId();
 
     /**
