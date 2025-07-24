@@ -59,7 +59,7 @@ public class Services {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointPagamentos))
                 .headers("Content-Type", "application/json", "Authorization", "Bearer " + this.pegaToken())
-                .POST(HttpRequest.BodyPublishers.ofString(body.bodyPagamento(v, pm, pt, pmst)))
+                .POST(HttpRequest.BodyPublishers.ofString(body.bodyPagamento("payment", v, pm, pt, pmst)))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
