@@ -31,11 +31,10 @@ public class MenusDeOpcoes {
 
             switch (opcao) {
                 case 1:
-                    this.menuDois();
+                    this.menuDois("payment");
                     break;
                 case 2:
-                    this.cancelamento();
-                    this.consultaTransacao();
+                    this.cancelamento("cancellment");
                     break;
                 default:
                     System.out.print("\nOpção inválida.");
@@ -43,7 +42,7 @@ public class MenusDeOpcoes {
         } while (opcao != 3);
     }
 
-    private void menuDois() throws IOException, InterruptedException {
+    private void menuDois(String command) throws IOException, InterruptedException {
         do {
             System.out.println("1) Debito   2) Credito  3) Pix  4) Voltar");
             System.out.print("Digite a opção: ");
@@ -51,15 +50,15 @@ public class MenusDeOpcoes {
 
             switch (opcao) {
                 case 1:
-                    this.debito();
+                    this.debito(command);
                     this.consultaTransacao();
                     break;
                 case 2:
-                    this.credito();
+                    this.credito(command);
                     this.consultaTransacao();
                     break;
                 case 3:
-                    this.pix();
+                    this.pix(command);
                     this.consultaTransacao();
                     break;
                 case 4:
@@ -72,7 +71,15 @@ public class MenusDeOpcoes {
     }
 
     private void consultaTransacao() throws IOException, InterruptedException {
+        int opcao = -1;
         do {
+            if (manipulacaoPayload.getPayload() == null || manipulacaoPayload.getPayload().isEmpty()) {
+                System.out.println("Aguardando transação... Por favor, aguarde.");
+                // Aguarda um tempo antes de mostrar novamente (ex: 2 segundos)
+                Thread.sleep(2000);
+                continue; // volta para o início do loop
+            }
+
             System.out.println("1) Consultar transação efetuada   0) Voltar:");
             System.out.print("Digite a opção: ");
             opcao = sc.nextInt();
@@ -98,30 +105,31 @@ public class MenusDeOpcoes {
         return value;
     }
 
-    private void debito() throws IOException, InterruptedException {
+    private void debito(String command) throws IOException, InterruptedException {
         float value = capturaValor();
-        services.chamaPagamento(value, "CARD", "DEBIT", "FULL_PAYMENT");
+        services.transactionRequest(command, value, "CARD", "DEBIT", "FULL_PAYMENT");
     }
 
-    private void credito() throws IOException, InterruptedException {
+    private void credito(String command) throws IOException, InterruptedException {
         float value = capturaValor();
         System.out.print("1) A vista  2) Parcelado");
         int opcao = sc.nextInt();
 
         if (opcao == 1)
-            services.chamaPagamento(value, "CARD", "CREDIT", "FULL_PAYMENT");
+            services.transactionRequest(command, value, "CARD", "CREDIT", "FULL_PAYMENT");
         else if (opcao == 2)
-            services.chamaPagamento(value, "CARD", "CREDIT", "FINANCED_NO_FEES");
+            services.transactionRequest(command, value, "CARD", "CREDIT", "FINANCED_NO_FEES");
         else
             System.out.println("Opção inválida.");
     }
 
-    private void pix() throws IOException, InterruptedException {
+    private void pix(String command) throws IOException, InterruptedException {
         float value = capturaValor();
-        services.chamaPagamento(value, "PIX", "DEBIT", "FULL_PAYMENT");
+        services.transactionRequest(command, value, "PIX", "DEBIT", "FULL_PAYMENT");
     }
 
-    private void cancelamento() throws IOException, InterruptedException {
-        services.chamaCancelamento();
+    private void cancelamento(String command) throws IOException, InterruptedException {
+        services.transactionRequest(command, 0, "c", "e", "d");
+        this.consultaTransacao();
     }
 }

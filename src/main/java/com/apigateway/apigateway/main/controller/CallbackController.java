@@ -28,9 +28,14 @@ public class CallbackController {
     @PostMapping
     public void callbackReturn(@RequestBody String payload) {
         JSONObject jsonObject = new JSONObject(payload);
-        String idPayer = jsonObject.getString("idPayer");
-        manipulacaoPayload.setIdPayer(idPayer);
-
+        
+        if (jsonObject.has("idPayer")) {
+            String idPayer = jsonObject.getString("idPayer");
+            manipulacaoPayload.setIdPayer(idPayer);
+        } else {
+            // Trate o caso de ausência do campo
+            System.out.println("Campo idPayer não encontrado no payload!");
+        }
         manipulacaoPayload.setPayload(payload);
     }
 }

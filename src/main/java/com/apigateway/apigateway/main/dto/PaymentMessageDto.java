@@ -5,9 +5,12 @@ public class PaymentMessageDto extends MessagePayload {
     private String paymentMethod;
     private String paymentType;
     private String paymentMethodSubType;
+    private String command;
     
     public PaymentMessageDto() {
     }
+
+    
 
     public float getValue() {
         return value;
@@ -32,6 +35,14 @@ public class PaymentMessageDto extends MessagePayload {
     }
     public void setPaymentMethodSubType(String paymentMethodSubType) {
         this.paymentMethodSubType = paymentMethodSubType;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     

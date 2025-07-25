@@ -25,7 +25,7 @@ public class Body {
 
     CorrelationId correlationId = new CorrelationId();
 
-    public String bodyPagamento(
+    public String bodyRequest(
         String command,
         float value,
         String paymentMethod,
@@ -36,15 +36,17 @@ public class Body {
         ReceiverDto receiver = new ReceiverDto();
         receiver.setCompanyId("000001");
         receiver.setStoreId("0025");
-        receiver.setTerminalId("03");
+        receiver.setTerminalId("02");
 
         MessagePayload messagePayload;
         if ("CANCELLMENT".equalsIgnoreCase(command)) {
             CancellationMessageDto cancellation = new CancellationMessageDto();
+            cancellation.setCommand(command);
             cancellation.setIdPayer(manipulacaoPayload.getIdPayer());
             messagePayload = cancellation;
         } else if ("PAYMENT".equalsIgnoreCase(command)) {
             PaymentMessageDto payment = new PaymentMessageDto();
+            payment.setCommand(command);
             payment.setValue(value);
             payment.setPaymentMethod(paymentMethod);
             payment.setPaymentType(paymentType);
