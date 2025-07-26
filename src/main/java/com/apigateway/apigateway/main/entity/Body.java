@@ -1,100 +1,91 @@
 package com.apigateway.apigateway.main.entity;
 
+import com.apigateway.apigateway.main.dto.CancellationMessageDto;
+import com.apigateway.apigateway.main.dto.DataDto;
+import com.apigateway.apigateway.main.dto.MessagePayload;
+import com.apigateway.apigateway.main.dto.PaymentMessageDto;
+import com.apigateway.apigateway.main.dto.ReceiverDto;
+import com.apigateway.apigateway.main.dto.RequestBodyDto;
+import com.apigateway.apigateway.main.enums.parametrosBody.FlowRequest;
+import com.apigateway.apigateway.main.enums.parametrosBody.TypeRequest;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.Command;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethod;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethodSubType;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentType;
 import com.apigateway.apigateway.main.utils.CorrelationId;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-/**
- * A classe Body é responsável por abrigar os metodos que geram os body das
- * requisições utilizadas nas operações de pagamento e cancelamento.
- */
 @Component
 public class Body {
 
+    @Value("${COMPANY_ID}")
+    private String companyId;
+
+    @Value("${STORE_ID}")
+    private String storeId;
+
+    @Value("${TERMINAL_ID}")
+    private String terminalId;
+
     @Value("${CALLBACK_URL}")
     private String callbackUrl;
+
+    @Value("${AUTOMATION_NAME}")
+    private String automationName;
 
     @Autowired
     private Payload manipulacaoPayload;
 
     CorrelationId correlationId = new CorrelationId();
 
-    /**
-     * Metodo responsável por criar o body para a requisição de pagamento. Ele
-     * recebe quatro parâmetros relacionados às opções de pagamento, cujos valores
-     * são definidos a partir da interação do operador com o menu principal da
-     * aplicação.
-     * Exemplo de valores: (10.99f, "CARD", "DEBIT", "FULL_PAYMENT").
-     */
-    public String bodyPagamento(float value,
-                                String paymentMethod,
-                                String paymentType,
-                                String paymentMethodSubType)
+    public String bodyRequest(
+            Command command,
+            float value,
+            PaymentMethod paymentMethod,
+            PaymentType paymentType,
+            PaymentMethodSubType paymentMethodSubType)
             throws JsonProcessingException {
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("type", "INPUT");
-        body.put("origin", "MIT - Mauricio Integration Tests");
+        ReceiverDto receiver = new ReceiverDto();
+        receiver.setCompanyId(companyId);
+        receiver.setStoreId(storeId);
+        receiver.setTerminalId(terminalId);
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("callbackUrl", callbackUrl);
-        data.put("correlationId", correlationId.geraCorrelationId());
-        data.put("flow", "SYNC");
-        data.put("automationName", "AUTOMACAO_TESTE"); //PODE ALTERAR
+        MessagePayload messagePayload;
+        if (command == Command.CANCELLMENT) {
+            CancellationMessageDto cancellation = new CancellationMessageDto();
+            cancellation.setCommand(command);
+            cancellation.setIdPayer(manipulacaoPayload.getIdPayer());
+            messagePayload = cancellation;
+        } else if (command == Command.PAYMENT) {
+            PaymentMessageDto payment = new PaymentMessageDto();
+            payment.setCommand(command);
+            payment.setValue(value);
+            payment.setPaymentMethod(paymentMethod);
+            payment.setPaymentType(paymentType);
+            payment.setPaymentMethodSubType(paymentMethodSubType);
+            messagePayload = payment;
+        } else {
+            throw new IllegalArgumentException("Comando inválido ou não suportado: " + command);
+        }
 
-        Map<String, Object> receiver = new LinkedHashMap<>();
-        receiver.put("companyId", "000001"); //PODE ALTERAR
-        receiver.put("storeId", "0025"); //PODE ALTERAR
-        receiver.put("terminalId", "03"); //PODE ALTERAR
-        data.put("receiver", receiver);
+        DataDto data = new DataDto();
+        data.setCallbackUrl(callbackUrl);
+        data.setCorrelationId(correlationId.geraCorrelationId());
+        data.setFlow(FlowRequest.SYNC);
+        data.setAutomationName(automationName);
+        data.setReceiver(receiver);
+        data.setMessage(messagePayload);
 
-        Map<String, Object> message = new LinkedHashMap<>();
-        message.put("command", "PAYMENT");
-        message.put("value", value);
-        message.put("paymentMethod", paymentMethod);
-        message.put("paymentType", paymentType);
-        message.put("paymentMethodSubType", paymentMethodSubType);
-        data.put("message", message);
-        body.put("data", data);
-
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(body);
-    }
-
-    /**
-     * Metodo responsável por criar o body para a requisição de cancelamento.
-     * Não são necessários parâmetros. A diferença do metodo `bodyPagamento`
-     * são os valores do campos `command` e `idPayer`. O valor de `idPayer` é
-     * usado para identificar a transação e poder cancela-la.
-     */
-    public String bodyCancelamento() throws JsonProcessingException {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("type", "INPUT");
-        body.put("origin", "MIT - Mauricio Integration Tests");
-
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("callbackUrl", callbackUrl);
-        data.put("correlationId", correlationId.geraCorrelationId());
-        data.put("flow", "SYNC");
-        data.put("automationName", "AUTOMACAO_TESTE");
-
-        Map<String, Object> receiver = new LinkedHashMap<>();
-        receiver.put("companyId", "000001");
-        receiver.put("storeId", "0025");
-        receiver.put("terminalId", "03");
-        data.put("receiver", receiver);
-
-        Map<String, Object> message = new LinkedHashMap<>();
-        message.put("command", "CANCELLMENT");
-        message.put("idPayer", manipulacaoPayload.getIdPayer());
-        data.put("message", message);
-        body.put("data", data);
+        RequestBodyDto body = new RequestBodyDto();
+        body.setType(TypeRequest.INPUT);
+        body.setOrigin("MIT - Mauricio Integration Tests");
+        body.setData(data);
 
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(body);

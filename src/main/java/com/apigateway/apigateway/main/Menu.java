@@ -1,6 +1,10 @@
 package com.apigateway.apigateway.main;
 
 import com.apigateway.apigateway.main.entity.Payload;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.Command;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethod;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethodSubType;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentType;
 import com.apigateway.apigateway.main.service.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,12 +12,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Scanner;
 
-/**
- * Classe que contém os menus de interação com o usuário.
- * Os metodos são bem simples e auto-explicativos.
- */
+
 @Component
-public class MenusDeOpcoes {
+public class Menu {
     @Autowired
     private Services services;
 
@@ -31,10 +32,10 @@ public class MenusDeOpcoes {
 
             switch (opcao) {
                 case 1:
-                    this.menuDois();
+                    this.metodosPagamento(Command.PAYMENT);
                     break;
                 case 2:
-                    this.cancelamento();
+                    this.cancelamento(Command.CANCELLMENT);
                     this.consultaTransacao();
                     break;
                 default:
@@ -43,7 +44,7 @@ public class MenusDeOpcoes {
         } while (opcao != 3);
     }
 
-    private void menuDois() throws IOException, InterruptedException {
+    private void metodosPagamento(Command command) throws IOException, InterruptedException {
         do {
             System.out.println("1) Debito   2) Credito  3) Pix  4) Voltar");
             System.out.print("Digite a opção: ");
@@ -51,35 +52,41 @@ public class MenusDeOpcoes {
 
             switch (opcao) {
                 case 1:
-                    this.debito();
-                    this.consultaTransacao();
+                    this.debito(command);
                     break;
                 case 2:
-                    this.credito();
-                    this.consultaTransacao();
+                    this.credito(command);
                     break;
                 case 3:
-                    this.pix();
-                    this.consultaTransacao();
+                    this.pix(command);
                     break;
                 case 4:
                     System.out.println("Voltando ao menu anterior...");
                     return;
                 default:
                     System.out.println("Opção inválida.");
+                    return;
             }
+            this.consultaTransacao();
         } while (opcao != 4);
     }
 
     private void consultaTransacao() throws IOException, InterruptedException {
+        int opcao = -1;
         do {
+            if (manipulacaoPayload.getPayload() == null || manipulacaoPayload.getPayload().isEmpty()) {
+                System.out.println("processando transacao.");
+                Thread.sleep(2000);
+                continue;
+            }
+
             System.out.println("1) Consultar transação efetuada   0) Voltar:");
             System.out.print("Digite a opção: ");
             opcao = sc.nextInt();
 
             switch (opcao) {
                 case 1:
-                    System.out.println("<<<---  RETORNO DA TRANSAÇÃO --->>>");
+                    System.out.println("<<<---  PAYLOAD --->>>");
                     System.out.println(manipulacaoPayload.getPayload() + "\n");
                     break;
                 case 0:
@@ -98,30 +105,31 @@ public class MenusDeOpcoes {
         return value;
     }
 
-    private void debito() throws IOException, InterruptedException {
+    private void debito(Command command) throws IOException, InterruptedException {
         float value = capturaValor();
-        services.chamaPagamento(value, "CARD", "DEBIT", "FULL_PAYMENT");
+        services.transactionRequest(command, value, PaymentMethod.CARD, PaymentType.DEBIT, PaymentMethodSubType.FULL_PAYMENT);
     }
 
-    private void credito() throws IOException, InterruptedException {
+    private void credito(Command command) throws IOException, InterruptedException {
         float value = capturaValor();
-        System.out.print("1) A vista  2) Parcelado");
+        System.out.println("1) A vista  2) Parcelado");
         int opcao = sc.nextInt();
 
         if (opcao == 1)
-            services.chamaPagamento(value, "CARD", "CREDIT", "FULL_PAYMENT");
+            services.transactionRequest(command, value, PaymentMethod.CARD, PaymentType.CREDIT, PaymentMethodSubType.FULL_PAYMENT);
         else if (opcao == 2)
-            services.chamaPagamento(value, "CARD", "CREDIT", "FINANCED_NO_FEES");
+            services.transactionRequest(command, value, PaymentMethod.CARD, PaymentType.CREDIT, PaymentMethodSubType.FINANCED_NO_FEES);
         else
             System.out.println("Opção inválida.");
     }
 
-    private void pix() throws IOException, InterruptedException {
+    private void pix(Command command) throws IOException, InterruptedException {
         float value = capturaValor();
-        services.chamaPagamento(value, "PIX", "DEBIT", "FULL_PAYMENT");
+        services.transactionRequest(command, value, PaymentMethod.PIX, PaymentType.DEBIT, PaymentMethodSubType.FULL_PAYMENT);
     }
 
-    private void cancelamento() throws IOException, InterruptedException {
-        services.chamaCancelamento();
+    private void cancelamento(Command command) throws IOException, InterruptedException {
+        //Todos parametros exceto o command serão ignorados
+        services.transactionRequest(command, 0, PaymentMethod.PIX, PaymentType.DEBIT, PaymentMethodSubType.FINANCED_NO_FEES);
     }
 }

@@ -7,17 +7,14 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Classe para acesso às credenciais de login na API.
- * O login é necessário para obter o token que será enviado
- * nas requisições de pagamento / cancelamento.
- */
 @Component
 public class CredenciaisAuth {
     @Value("${CLIENT_ID}")
     private String clientId;
+
     @Value("${PAYER_USERNAME}")
     private String username;
+    
     @Value("${PASSWORD}")
     private String password;
 
