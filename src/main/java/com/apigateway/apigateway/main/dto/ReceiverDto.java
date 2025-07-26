@@ -7,25 +7,29 @@ public class ReceiverDto {
 
     public ReceiverDto() {
     }
-    
+
     public String getCompanyId() {
         return companyId;
     }
+
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
+
     public String getStoreId() {
         return storeId;
     }
+
     public void setStoreId(String storeId) {
         this.storeId = storeId;
     }
+
     public String getTerminalId() {
         return terminalId;
     }
+
     public void setTerminalId(String terminalId) {
         this.terminalId = terminalId;
     }
 
-    
 }

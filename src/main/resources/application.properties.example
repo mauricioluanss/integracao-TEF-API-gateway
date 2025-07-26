@@ -1,13 +1,29 @@
 spring.application.name=apigateway
 
-#Credenciais de login
+# Credenciais de login
 CLIENT_ID=
 PAYER_USERNAME=
 PASSWORD=
 
-#Minha URL de callback
-CALLBACK_URL=.../webhook
+# URL de callback
+CALLBACK_URL=url_aqui/webhook
 
-#Endpoints da API de pagamento
-EP_PAGAMENTOS=
+# Endpoints da API de pagamento
 EP_TOKEN=
+EP_PAGAMENTOS=
+
+# Identificação da Empresa, Loja e terminal (checkout)
+COMPANY_ID=
+STORE_ID=
+TERMINAL_ID=
+
+AUTOMATION_NAME=
+
+
+### PARA REDUZIR OS LOGS NO CONSOLE E MELHORAR A VISUALIZAÇÃO ###
+# Reduz o log do Spring Boot para WARN
+logging.level.org.springframework=warn
+# Reduz o log do Tomcat para WARN
+logging.level.org.apache.catalina=warn
+logging.level.org.apache.coyote=warn
+logging.level.org.apache.tomcat=warn

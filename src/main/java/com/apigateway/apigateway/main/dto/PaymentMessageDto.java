@@ -1,49 +1,60 @@
 package com.apigateway.apigateway.main.dto;
 
+import com.apigateway.apigateway.main.enums.parametrosPagamento.Command;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethod;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethodSubType;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentType;
+
 public class PaymentMessageDto extends MessagePayload {
+    private Command command;
     private float value;
-    private String paymentMethod;
-    private String paymentType;
-    private String paymentMethodSubType;
-    private String command;
-    
+    private PaymentMethod paymentMethod;
+    private PaymentType paymentType;
+    private PaymentMethodSubType paymentMethodSubType;
+
     public PaymentMessageDto() {
     }
 
-    
+    public Command getCommand() {
+        return command;
+    }
+
+    public void setCommand(Command command) {
+        this.command = command;
+    }
 
     public float getValue() {
         return value;
     }
+
     public void setValue(float value) {
         this.value = value;
     }
-    public String getPaymentMethod() {
+
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
-    public void setPaymentMethod(String paymentMethod) {
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
-    public String getPaymentType() {
+
+    public PaymentType getPaymentType() {
         return paymentType;
     }
-    public void setPaymentType(String paymentType) {
+
+    public void setPaymentType(PaymentType paymentType) {
         this.paymentType = paymentType;
     }
-    public String getPaymentMethodSubType() {
+
+    public PaymentMethodSubType getPaymentMethodSubType() {
         return paymentMethodSubType;
     }
-    public void setPaymentMethodSubType(String paymentMethodSubType) {
+
+    public void setPaymentMethodSubType(PaymentMethodSubType paymentMethodSubType) {
         this.paymentMethodSubType = paymentMethodSubType;
     }
 
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
+    
     
 }

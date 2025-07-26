@@ -1,8 +1,10 @@
 package com.apigateway.apigateway.main.dto;
 
+import com.apigateway.apigateway.main.enums.parametrosPagamento.Command;
+
 public class CancellationMessageDto extends MessagePayload {
     private String idPayer;
-    private String command;
+    private Command command;
 
     public CancellationMessageDto() {
     }
@@ -15,11 +17,11 @@ public class CancellationMessageDto extends MessagePayload {
         this.idPayer = idPayer;
     }
 
-    public String getCommand() {
+    public Command getCommand() {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(Command command) {
         this.command = command;
     }
 

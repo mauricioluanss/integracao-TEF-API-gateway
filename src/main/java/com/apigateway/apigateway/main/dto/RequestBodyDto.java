@@ -1,18 +1,19 @@
 package com.apigateway.apigateway.main.dto;
 
+import com.apigateway.apigateway.main.enums.parametrosBody.TypeRequest;
 public class RequestBodyDto {
-    private String type;
+    private TypeRequest type;
     private String origin;
     private DataDto data;
 
     public RequestBodyDto() {
     }
 
-    public String getType() {
+    public TypeRequest getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TypeRequest type) {
         this.type = type;
     }
 

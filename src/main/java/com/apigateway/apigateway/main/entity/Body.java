@@ -6,19 +6,37 @@ import com.apigateway.apigateway.main.dto.MessagePayload;
 import com.apigateway.apigateway.main.dto.PaymentMessageDto;
 import com.apigateway.apigateway.main.dto.ReceiverDto;
 import com.apigateway.apigateway.main.dto.RequestBodyDto;
+import com.apigateway.apigateway.main.enums.parametrosBody.FlowRequest;
+import com.apigateway.apigateway.main.enums.parametrosBody.TypeRequest;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.Command;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethod;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethodSubType;
+import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentType;
 import com.apigateway.apigateway.main.utils.CorrelationId;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class Body {
 
+    @Value("${COMPANY_ID}")
+    private String companyId;
+
+    @Value("${STORE_ID}")
+    private String storeId;
+
+    @Value("${TERMINAL_ID}")
+    private String terminalId;
+
     @Value("${CALLBACK_URL}")
     private String callbackUrl;
+
+    @Value("${AUTOMATION_NAME}")
+    private String automationName;
 
     @Autowired
     private Payload manipulacaoPayload;
@@ -26,25 +44,25 @@ public class Body {
     CorrelationId correlationId = new CorrelationId();
 
     public String bodyRequest(
-        String command,
-        float value,
-        String paymentMethod,
-        String paymentType,
-        String paymentMethodSubType) throws JsonProcessingException {
+            Command command,
+            float value,
+            PaymentMethod paymentMethod,
+            PaymentType paymentType,
+            PaymentMethodSubType paymentMethodSubType)
+            throws JsonProcessingException {
 
-        // Monta o objeto Receiver
         ReceiverDto receiver = new ReceiverDto();
-        receiver.setCompanyId("000001");
-        receiver.setStoreId("0025");
-        receiver.setTerminalId("02");
+        receiver.setCompanyId(companyId);
+        receiver.setStoreId(storeId);
+        receiver.setTerminalId(terminalId);
 
         MessagePayload messagePayload;
-        if ("CANCELLMENT".equalsIgnoreCase(command)) {
+        if (command == Command.CANCELLMENT) {
             CancellationMessageDto cancellation = new CancellationMessageDto();
             cancellation.setCommand(command);
             cancellation.setIdPayer(manipulacaoPayload.getIdPayer());
             messagePayload = cancellation;
-        } else if ("PAYMENT".equalsIgnoreCase(command)) {
+        } else if (command == Command.PAYMENT) {
             PaymentMessageDto payment = new PaymentMessageDto();
             payment.setCommand(command);
             payment.setValue(value);
@@ -56,22 +74,19 @@ public class Body {
             throw new IllegalArgumentException("Comando inválido ou não suportado: " + command);
         }
 
-        // Monta o objeto Data principal
         DataDto data = new DataDto();
         data.setCallbackUrl(callbackUrl);
         data.setCorrelationId(correlationId.geraCorrelationId());
-        data.setFlow("SYNC");
-        data.setAutomationName("AUTOMACAO_TESTE");
+        data.setFlow(FlowRequest.SYNC);
+        data.setAutomationName(automationName);
         data.setReceiver(receiver);
-        data.setMessage(messagePayload); // Adiciona o payload correto
+        data.setMessage(messagePayload);
 
-        // Monta o corpo da requisição final
         RequestBodyDto body = new RequestBodyDto();
-        body.setType("INPUT");
+        body.setType(TypeRequest.INPUT);
         body.setOrigin("MIT - Mauricio Integration Tests");
         body.setData(data);
 
-        // Serializa o objeto completo para JSON
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(body);
     }
