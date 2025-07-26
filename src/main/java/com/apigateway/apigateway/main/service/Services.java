@@ -19,13 +19,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Classe responsável por realizar operações de autenticação e transações
+ * utilizando a entidade e enums.
+ */
 @Service
 public class Services {
-    @Value("${EP_TOKEN}")
-    private String endpointToken;
+    @Value("${TOKEN_ENDPOINT_URL}")
+    private String tokenEndpointUrl;
 
-    @Value("${EP_PAGAMENTOS}")
-    private String endpointPagamentos;
+    @Value("${TRANSACTION_ENDPOINT_URL}")
+    private String transactionEndpointUrl;
 
     @Autowired
     private Body body;
@@ -33,25 +37,52 @@ public class Services {
     @Autowired
     private CredenciaisAuth credenciaisAuth;
 
+    // Cliente HTTP
     HttpClient client = HttpClient.newHttpClient();
 
-    private String pegaToken() throws IOException, InterruptedException {
+    /**
+     * Realiza a requisição para obter o token de autenticação.
+     *
+     * @return String contendo o IdToken.
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private String getToken() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpointToken))
+                .uri(URI.create(tokenEndpointUrl))
                 .headers("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(credenciaisAuth.retornaCredenciais()))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return capturaIdToken(response);
+        return getIdToken(response);
     }
 
-    public String capturaIdToken(HttpResponse<String> response) {
+    /**
+     * Extrai o IdToken da resposta de autenticação.
+     *
+     * @param response Resposta HTTP recebida do endpoint de autenticação.
+     * @return String contendo o IdToken.
+     */
+    public String getIdToken(HttpResponse<String> response) {
         JSONObject jsonObject = new JSONObject(response.body());
         JSONObject authenticationResult = jsonObject.getJSONObject("AuthenticationResult");
         return authenticationResult.getString("IdToken");
     }
 
+    /**
+     * Realiza a requisição de transação.
+     *
+     * @param command              Comando da transação Ex: (Payment, Cancellment
+     *                             ...).
+     * @param value                Valor da transação Ex: (4.59, 99.1).
+     * @param paymentMethod        Método de pagamento Ex: (CARD, PIX, LINK).
+     * @param paymentType          Tipo de pagamento Ex: (DEBIT, CREDIT).
+     * @param paymentMethodSubType Subtipo do método de pagamento Ex: (FULL_PAYMENT,
+     *                             FINANCED_NO_FEES).
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void transactionRequest(
             Command command,
             float value,
@@ -62,13 +93,13 @@ public class Services {
         System.out.println("Chamando Payer...\n");
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpointPagamentos))
-                .headers("Content-Type", "application/json", "Authorization", "Bearer " + this.pegaToken())
+                .uri(URI.create(transactionEndpointUrl))
+                .headers("Content-Type", "application/json", "Authorization", "Bearer " + this.getToken())
                 .POST(HttpRequest.BodyPublishers
                         .ofString(body.bodyRequest(command, value, paymentMethod, paymentType, paymentMethodSubType)))
                 .build();
 
-        // pra imprimir no console a requisição enviada
+        // Imprime no console a requisição enviada pra debug
         System.out.println(body.bodyRequest(command, value, paymentMethod, paymentType, paymentMethodSubType) + "\n");
         /* HttpResponse<String> response = */client.send(request, HttpResponse.BodyHandlers.ofString());
     }

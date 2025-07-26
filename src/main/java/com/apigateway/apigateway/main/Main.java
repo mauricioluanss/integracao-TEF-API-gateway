@@ -10,6 +10,6 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         ApplicationContext context = SpringApplication.run(Main.class, args);
         Menu menu = context.getBean(Menu.class);
-        menu.menuPrincipal();
+        menu.mainMenu();
     }
 }

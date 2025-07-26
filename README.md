@@ -4,7 +4,7 @@ Antes de mais nada, preciso deixar claro que o objetivo de desenvolver este proj
 
 Sendo assim, este projeto implementa a lógica essencial para integrar um sistema de automação comercial ao Checkout de pagamentos da empresa que trabalho, via API Gateway. Além disso, tem um menu interativo para testar chamdas e consultar as transações.
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
@@ -20,7 +20,7 @@ Antes de começar, certifique-se de ter instalado:
 - Maven
 - Ngrok (para exposição pública da aplicação)
 
-## ⚙️ Configuração do Ambiente
+## Configuração do Ambiente
 
 ### 1. Configuração das Variáveis de Ambiente
 
@@ -43,8 +43,8 @@ Antes de começar, certifique-se de ter instalado:
    CALLBACK_URL=https://seu-tunnel-ngrok.ngrok.io/webhook
 
    # Endpoints da API de pagamento
-   EP_TOKEN=https://api.exemplo.com/auth/token
-   EP_PAGAMENTOS=https://api.exemplo.com/payments
+   TOKEN_ENDPOINT_URL=https://api.exemplo.com/auth/token
+   TRANSACTION_ENDPOINT_URL=https://api.exemplo.com/payments
 
    # Identificação da Empresa, Loja e terminal (checkout)
    COMPANY_ID=seu_company_id

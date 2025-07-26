@@ -12,50 +12,62 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Scanner;
 
-
+/**
+ * Classe responsável por exibir e gerenciar o menu principal da aplicação de integração com API Gateway.
+ * <p>
+ * Permite ao usuário realizar operações de pagamento (débito, crédito, pix), cancelamento de transação
+ * e consulta do status das transações realizadas. Utiliza injeção de dependências do Spring para acessar
+ * os serviços de transação e o payload das operações.
+ * <p>
+ * Fluxo principal:
+ * <ul>
+ *   <li>Exibe o menu inicial para o usuário escolher entre pagar ou cancelar uma transação.</li>
+ *   <li>Direciona para menus específicos de acordo com a escolha do usuário.</li>
+ *   <li>Realiza chamadas de serviço para processar pagamentos ou cancelamentos.</li>
+ *   <li>Permite consultar o resultado da ultima transação.</li>
+ * </ul>
+ */
 @Component
 public class Menu {
     @Autowired
     private Services services;
 
     @Autowired
-    private Payload manipulacaoPayload;
+    private Payload payload;
 
     Scanner sc = new Scanner(System.in);
-    int opcao;
+    int selectedOption;
 
-    public void menuPrincipal() throws IOException, InterruptedException {
+    public void mainMenu() throws IOException, InterruptedException {
         do {
-            System.out.println("1) Pagar  2) Cancelar transação");
-            System.out.print("Digite a opção: ");
-            opcao = sc.nextInt();
+            System.out.print("1) Pagar  2) Cancelar transação\nDigite a opção: ");
+            selectedOption = sc.nextInt();
 
-            switch (opcao) {
+            switch (selectedOption) {
                 case 1:
-                    this.metodosPagamento(Command.PAYMENT);
+                    this.paymentTypes(Command.PAYMENT);
                     break;
                 case 2:
-                    this.cancelamento(Command.CANCELLMENT);
-                    this.consultaTransacao();
+                    this.cancellment(Command.CANCELLMENT);
+                    this.getTransaction();
                     break;
                 default:
                     System.out.print("\nOpção inválida.");
             }
-        } while (opcao != 3);
+        } while (selectedOption != 3);
     }
 
-    private void metodosPagamento(Command command) throws IOException, InterruptedException {
+    private void paymentTypes(Command command) throws IOException, InterruptedException {
         do {
-            System.out.println("1) Debito   2) Credito  3) Pix  4) Voltar");
-            System.out.print("Digite a opção: ");
-            opcao = sc.nextInt();
+            System.out.print("1) Debito   2) Credito  3) Pix  4) Voltar\nDigite a opção: ");
+            selectedOption = sc.nextInt();
 
-            switch (opcao) {
+            switch (selectedOption) {
                 case 1:
-                    this.debito(command);
+                    this.debit(command);
                     break;
                 case 2:
-                    this.credito(command);
+                    this.credit(command);
                     break;
                 case 3:
                     this.pix(command);
@@ -67,27 +79,25 @@ public class Menu {
                     System.out.println("Opção inválida.");
                     return;
             }
-            this.consultaTransacao();
-        } while (opcao != 4);
+            this.getTransaction();
+        } while (selectedOption != 4);
     }
 
-    private void consultaTransacao() throws IOException, InterruptedException {
-        int opcao = -1;
+    private void getTransaction() throws IOException, InterruptedException {
+        int selectedOption = -1;
         do {
-            if (manipulacaoPayload.getPayload() == null || manipulacaoPayload.getPayload().isEmpty()) {
-                System.out.println("processando transacao.");
+            if (payload.getPayload() == null || payload.getPayload().isEmpty()) {
+                System.out.println("processando transacao...");
                 Thread.sleep(2000);
                 continue;
             }
 
-            System.out.println("1) Consultar transação efetuada   0) Voltar:");
-            System.out.print("Digite a opção: ");
-            opcao = sc.nextInt();
+            System.out.print("1) Consultar transação efetuada   0) Voltar\nDigite a opção: ");
+            selectedOption = sc.nextInt();
 
-            switch (opcao) {
+            switch (selectedOption) {
                 case 1:
-                    System.out.println("<<<---  PAYLOAD --->>>");
-                    System.out.println(manipulacaoPayload.getPayload() + "\n");
+                    System.out.println("########## PAYLOAD ##########\n" + payload.getPayload() + "\n");
                     break;
                 case 0:
                     System.out.println("Voltando ao menu anterior...\n");
@@ -95,40 +105,40 @@ public class Menu {
                 default:
                     System.out.println("Opção inválida\n");
             }
-        } while (opcao != 0);
+        } while (selectedOption != 0);
     }
 
-    private float capturaValor() {
+    private float setValue() {
         sc.nextLine();
         System.out.print("Digite o valor desejado: ");
         float value = sc.nextFloat();
         return value;
     }
 
-    private void debito(Command command) throws IOException, InterruptedException {
-        float value = capturaValor();
+    private void debit(Command command) throws IOException, InterruptedException {
+        float value = setValue();
         services.transactionRequest(command, value, PaymentMethod.CARD, PaymentType.DEBIT, PaymentMethodSubType.FULL_PAYMENT);
     }
 
-    private void credito(Command command) throws IOException, InterruptedException {
-        float value = capturaValor();
-        System.out.println("1) A vista  2) Parcelado");
-        int opcao = sc.nextInt();
+    private void credit(Command command) throws IOException, InterruptedException {
+        float value = setValue();
+        System.out.print("1) A vista  2) Parcelado\nDigite a opção: ");
+        int selectedOption = sc.nextInt();
 
-        if (opcao == 1)
+        if (selectedOption == 1)
             services.transactionRequest(command, value, PaymentMethod.CARD, PaymentType.CREDIT, PaymentMethodSubType.FULL_PAYMENT);
-        else if (opcao == 2)
+        else if (selectedOption == 2)
             services.transactionRequest(command, value, PaymentMethod.CARD, PaymentType.CREDIT, PaymentMethodSubType.FINANCED_NO_FEES);
         else
             System.out.println("Opção inválida.");
     }
 
     private void pix(Command command) throws IOException, InterruptedException {
-        float value = capturaValor();
+        float value = setValue();
         services.transactionRequest(command, value, PaymentMethod.PIX, PaymentType.DEBIT, PaymentMethodSubType.FULL_PAYMENT);
     }
 
-    private void cancelamento(Command command) throws IOException, InterruptedException {
+    private void cancellment(Command command) throws IOException, InterruptedException {
         //Todos parametros exceto o command serão ignorados
         services.transactionRequest(command, 0, PaymentMethod.PIX, PaymentType.DEBIT, PaymentMethodSubType.FINANCED_NO_FEES);
     }

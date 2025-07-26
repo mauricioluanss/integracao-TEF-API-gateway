@@ -20,9 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Classe responsável por construir o corpo (body) da requisição para integração com o API Gateway.
+ * Utiliza propriedades configuradas via application.properties e monta o payload conforme o comando recebido.
+ */
 @Component
 public class Body {
-
     @Value("${COMPANY_ID}")
     private String companyId;
 
@@ -39,10 +42,21 @@ public class Body {
     private String automationName;
 
     @Autowired
-    private Payload manipulacaoPayload;
+    private Payload payload;
 
     CorrelationId correlationId = new CorrelationId();
 
+    /**
+     * Monta o corpo da requisição (body) em formato JSON, de acordo com o comando informado.
+     *
+     * @param command              Comando da transação Ex: (Payment, Cancellment...).
+     * @param value                Valor da transação Ex: (4.59, 99.1).
+     * @param paymentMethod        Método de pagamento Ex: (CARD, PIX, LINK).
+     * @param paymentType          Tipo de pagamento Ex: (DEBIT, CREDIT).
+     * @param paymentMethodSubType Subtipo do método de pagamento Ex: (FULL_PAYMENT,FINANCED_NO_FEES).
+     * @return                     String JSON representando o corpo da requisição
+     * @throws JsonProcessingException Caso ocorra erro na serialização para JSON
+     */
     public String bodyRequest(
             Command command,
             float value,
@@ -60,7 +74,7 @@ public class Body {
         if (command == Command.CANCELLMENT) {
             CancellationMessageDto cancellation = new CancellationMessageDto();
             cancellation.setCommand(command);
-            cancellation.setIdPayer(manipulacaoPayload.getIdPayer());
+            cancellation.setIdPayer(payload.getIdPayer());
             messagePayload = cancellation;
         } else if (command == Command.PAYMENT) {
             PaymentMessageDto payment = new PaymentMessageDto();
@@ -76,7 +90,7 @@ public class Body {
 
         DataDto data = new DataDto();
         data.setCallbackUrl(callbackUrl);
-        data.setCorrelationId(correlationId.geraCorrelationId());
+        data.setCorrelationId(correlationId.getCorrelationId());
         data.setFlow(FlowRequest.SYNC);
         data.setAutomationName(automationName);
         data.setReceiver(receiver);
