@@ -5,8 +5,9 @@ CLIENT_ID=
 PAYER_USERNAME=
 PASSWORD=
 
-# URL de callback
-CALLBACK_URL=url_aqui/webhook
+# URL de callback (webhook.site)
+# Acesse https://webhook.site e copie a URL única gerada
+CALLBACK_URL=https://webhook.site/unique-id-aqui
 
 # Endpoints da API de pagamento
 TOKEN_ENDPOINT_URL=

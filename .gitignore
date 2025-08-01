@@ -7,7 +7,7 @@ application.properties
 test/
 HELP.md
 .gitattributes
-
+**/resources/response.json
 
 
 ### STS ###
