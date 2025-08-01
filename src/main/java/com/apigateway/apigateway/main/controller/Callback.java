@@ -15,66 +15,74 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Componente responsável por realizar o polling no endpoint de callback,
+ * processar as respostas recebidas e atualizar o payload da aplicação.
+ */
 @Component
 public class Callback {
-    
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final String webhookApiUrl;
     private final Payload payload;
-    
-    public Callback(@Value("${POOLING_CALLBACK_URL}") String webhookApiUrl,
-                    @Autowired Payload payload)
-    {
+
+    /**
+     * Construtor da classe Callback.
+     *
+     * @param webhookApiUrl URL do endpoint de callback (POOLING_CALLBACK_URL)
+     * @param payload       Instância de Payload injetada pelo Spring
+     */
+    public Callback(@Value("${POOLING_CALLBACK_URL}") String webhookApiUrl, @Autowired Payload payload) {
         this.webhookApiUrl = webhookApiUrl;
         this.payload = payload;
     }
-    
+
+    /**
+     * Inicia o processo de polling, agendando a verificação de callbacks a cada 5 segundos.
+     */
     public void startPolling() {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(this::checkForNewRequests, 0, 5, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(this::checkCallbacks, 0, 5, TimeUnit.SECONDS);
     }
-    
-    private void checkForNewRequests() {
+
+    private void checkCallbacks() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(webhookApiUrl))
-                .GET()
-                .build();
-                
-            HttpResponse<String> response = httpClient.send(request, 
-                HttpResponse.BodyHandlers.ofString());
-                
+                    .uri(URI.create(webhookApiUrl))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
             if (response.statusCode() == 200) {
-                JSONObject requests = new JSONObject(response.body());
-                //JSONArray requests = new JSONArray(response.body());
+                JSONObject requestJson = new JSONObject(response.body());
+                JSONArray requests = requestJson.getJSONArray("data");
                 processNewRequests(requests);
             }
-        } catch (Exception e) {
-            System.err.println("Erro no polling: " + e.getMessage());
-        }
+        } catch (Exception e) {}
     }
-    
-    private void processNewRequests(JSONObject requests) {
-        /* for (int i = 0; i < requests.length(); i++) {
-            String body = requests.getString(i)
-            JSONObject request = requests.getJSONObject(i);
-            String body = request.getString("body"); */
-            String body = requests.toString();
-            
-            // Atualiza o payload local
-            payload.setPayload(body);
-            
-            // Extrai idPayer se existir
-            /* try {
-                JSONObject jsonBody = new JSONObject(body);
-                if (jsonBody.has("idPayer")) {
-                    payload.setIdPayer(jsonBody.getString("idPayer"));
-                }
-            } catch (Exception e) {
-                // Ignora erros de parsing
-            } */
-            
-            System.out.println("Nova transação recebida via polling!");
-            System.out.println("Payload: " + body);
+
+    /**
+     * Processa o array de requisições recebidas do callback, extraindo o conteúdo do último item.
+     * Atualiza o payload e armazena o idPayer.
+     *
+     * @param requests JSONArray contendo as requisições recebidas
+     */
+    private void processNewRequests(JSONArray requests) {
+        // obtém o último objeto do array de requisições
+        JSONObject request = requests.getJSONObject(requests.length() -1);
+        String content = request.getString("content");
+
+        JSONObject contentJson = new JSONObject(content);
+
+        // salva o idPayer para uso em cancelamento de transação, se existir
+        if (contentJson.has("idPayer")) {
+            String idPayer = contentJson.getString("idPayer");
+            payload.setIdPayer(idPayer);
+        } else {
+            System.out.println("id payer não existe no payload");
         }
+
+        payload.setPayload(content);
+    }
 }

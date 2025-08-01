@@ -4,167 +4,46 @@ Antes de mais nada, preciso deixar claro que o objetivo de desenvolver este proj
 
 Sendo assim, este projeto implementa a lógica essencial para integrar um sistema de automação comercial ao Checkout de pagamentos da empresa que trabalho, via API Gateway. Além disso, tem um menu interativo para testar chamdas e consultar as transações.
 
-**🔄 Atualização Recente:** O projeto foi atualizado para usar o [webhook.site](https://webhook.site) ao invés do ngrok para receber callbacks das transações, simplificando a configuração e melhorando a experiência de desenvolvimento.
-
-## Pré-requisitos
-
-Antes de começar, certifique-se de ter instalado:
-
-- **Java 21** - [Download do JDK 21](https://adoptium.net/temurin/releases/?version=21)
-- **Maven 3.6+** - [Download do Maven](https://maven.apache.org/download.cgi)
-- **Webhook.site** - [Acesse aqui](https://webhook.site) (para receber callbacks das transações)
-
-
-## Tecnologias Utilizadas
-
+## Tecnologias
 - Java 21
-- Spring Boot 3.4.3
+- Spring Boot
 - Maven
-- Webhook.site (para receber callbacks das transações)
+- Webhook.site (para receber callbacks)
 
-## Configuração do Ambiente
+## Como funciona
+1. **Menu Interativo:**
+   - Ao iniciar a aplicação, um menu é exibido no terminal para:
+     - Realizar pagamentos (débito, crédito, pix)
+     - Cancelar a última transação
+     - Consultar o resultado da última transação
+2. **Processo de Pagamento:**
+   - O usuário escolhe o tipo de pagamento e informa o valor.
+   - A aplicação envia a requisição para o endpoint de pagamento.
+   - O resultado é enviado via callback para a URL configurada (webhook.site).
+3. **Callback:**
+   - O sistema faz polling na URL do webhook para buscar o resultado da transação e exibe no menu.
 
-### 1. Configuração das Variáveis de Ambiente
-
-1. **Copie o arquivo de exemplo:**
+## Configuração Rápida
+1. Copie e edite o arquivo de propriedades:
    ```bash
    cp src/main/resources/application.properties.example src/main/resources/application.properties
+   # Edite com suas credenciais e a URL do webhook.site
    ```
+2. Execute a aplicação.
 
-2. **Edite o arquivo `application.properties`** com suas credenciais:
+3. Acesse [webhook.site](https://webhook.site), copie a URL gerada e configure no arquivo de propriedades.
 
-   ```properties
-   spring.application.name=apigateway
-
-   # Credenciais de login
-   CLIENT_ID=seu_client_id_aqui
-   PAYER_USERNAME=seu_username_aqui
-   PASSWORD=sua_senha_aqui
-
-   # URL de callback (webhook.site)
-   CALLBACK_URL=https://webhook.site/abc123-def456
-
-   # Endpoints da API de pagamento
-   TOKEN_ENDPOINT_URL=https://api.exemplo.com/auth/token
-   TRANSACTION_ENDPOINT_URL=https://api.exemplo.com/payments
-
-   # Identificação da Empresa, Loja e terminal (checkout)
-   COMPANY_ID=seu_company_id
-   STORE_ID=seu_store_id
-   TERMINAL_ID=seu_terminal_id
-
-   AUTOMATION_NAME=nome_da_sua_automacao
-
-   # Configurações de log (opcional)
-   logging.level.org.springframework=warn
-   logging.level.org.apache.catalina=warn
-   logging.level.org.apache.coyote=warn
-   logging.level.org.apache.tomcat=warn
-   ```
-
-### 2. Configuração do Webhook.site
-
-**📖 Para instruções detalhadas, consulte o arquivo [WEBHOOK_SETUP.md](WEBHOOK_SETUP.md)**
-
-1. **Acesse o Webhook.site:**
-   - Vá para [https://webhook.site](https://webhook.site)
-   - Uma URL única será gerada automaticamente (exemplo: `https://webhook.site/abc123-def456`)
-
-2. **Copie a URL gerada** e atualize o `CALLBACK_URL` no `application.properties`
-
-3. **Mantenha a página do webhook.site aberta** para visualizar os callbacks recebidos
-
-
-
-## Como Usar
-
-Após iniciar a aplicação, você verá um menu interativo no terminal:
-
+## Estrutura Principal
 ```
-1) Pagar  2) Cancelar transação
-Digite a opção:
-```
-
-### Opções Disponíveis:
-
-1. **Pagar** - Inicia uma nova transação de pagamento
-   - Debito
-   - Credito (à vista ou parcelado)
-   - Pix
-
-2. **Cancelar transação** - Cancela a ultima transação existente
-
-3. **Consultar transação** - Visualiza o ultimo payload de retorno da transação
-
-**Visualizando os Callbacks no Webhook.site:**
-- Mantenha a página do webhook.site aberta no navegador
-- Cada transação realizada aparecerá como uma nova requisição na página
-- Clique em qualquer requisição para ver os detalhes completos do payload
-- Os dados incluem headers, body e timestamp da transação
-
-## Fluxo de Funcionamento padrão
-
-1. **Disparo da Venda:**  
-   O sistema de automação realiza uma requisição HTTP `POST` para um endpoint da API do Checkout.  
-   O corpo (`payload`) dessa requisição contém:
-   - Informações da venda
-   - Dados de identificação do terminal de pagamento (checkout)
-   - URL de callback para o retorno da transação
-   - Um id único que identifica cada transação
-
-2. **Ativação do Checkout:**  
-   Ao receber a requisição, o Checkout é ativado e a sobe na tela chamando a transação.
-
-3. **Processamento via Gateway de TEF:**  
-   Após o cliente finalizar o pagamento, o Checkout envia uma requisição ao Gateway de TEF, que processa a transação e retorna um `payload` com os dados da resposta.
-
-4. **Retorno à Automação (Callback):**  
-   A API do Checkout, ao receber o `payload` de resposta, envia os dados para a URL de callback previamente informada pela automação. No nosso caso, essa URL é do webhook.site, que recebe e exibe os dados da transação para visualização.
-
-
-## Estrutura do Projeto
-
-```
-integracao-api-gateway/
 ├── src/main/java/com/apigateway/apigateway/main/
-│   ├── controller/
-│   │   └── CallbackController.java          # Endpoint para callbacks (desabilitado - usando webhook.site)
-│   ├── dto/                                 # Data Transfer Objects
-│   ├── entity/                              # Entidades do sistema
-│   ├── enums/                               # Enumerações
-│   │   ├── parametrosBody/                  # Enums para parâmetros do body
-│   │   └── parametrosPagamento/             # Enums para métodos de pagamento
-│   ├── service/
-│   │   └── Services.java                    # Serviços de integração com API
-│   ├── utils/
-│   │   └── CorrelationId.java               # Utilitários
-│   ├── Main.java                            # Classe principal
-│   └── Menu.java                            # Menu interativo
-├── src/main/resources/
-│   └── application.properties.example       # Configurações de exemplo
-├── WEBHOOK_SETUP.md                         # Instruções para webhook.site
-├── pom.xml                                  # Dependências Maven
-└── README.md
+│   ├── Main.java         # Inicialização da aplicação
+│   ├── Menu.java         # Menu interativo e fluxo principal
+│   ├── controller/Callback.java # Polling do webhook
+│   ├── service/Services.java    # Integração com API de pagamentos
+│   └── entity/Payload.java      # Armazena dados das transações
 ```
 
-## Configurações
-
-### Logs
-
-Para reduzir os logs no console e melhorar a visualização, as seguintes configurações estão disponíveis no `application.properties`:
-
-```properties
-# Reduz o log do Spring Boot para WARN
-logging.level.org.springframework=warn
-# Reduz o log do Tomcat para WARN
-logging.level.org.apache.catalina=warn
-logging.level.org.apache.coyote=warn
-logging.level.org.apache.tomcat=warn
-```
-
-## Contribuição
-
-Este projeto foi desenvolvido para fins de estudo. Sinta-se à vontade para fazer melhorias e contribuições.
 
 ---
+Projeto para fins de estudo e demonstração de integração com API Gateway de pagamentos.
 

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Classe responsável por exibir e gerenciar o menu principal da aplicação de integração com API Gateway.
+ * Classe responsável por exibir e gerenciar o menu principal da aplicação.
  * <p>
  * Permite ao usuário realizar operações de pagamento (débito, crédito, pix), cancelamento de transação
  * e consulta do status das transações realizadas. Utiliza injeção de dependências do Spring para acessar
@@ -24,8 +24,8 @@ import java.util.Scanner;
  * <ul>
  *   <li>Exibe o menu inicial para o usuário escolher entre pagar ou cancelar uma transação.</li>
  *   <li>Direciona para menus específicos de acordo com a escolha do usuário.</li>
- *   <li>Realiza chamadas de serviço para processar pagamentos ou cancelamentos.</li>
- *   <li>Permite consultar o resultado da ultima transação.</li>
+ *   <li>Realiza chamadas de serviço para processar pagamento ou cancelamento.</li>
+ *   <li>Permite consultar o resultado da última transação.</li>
  * </ul>
  */
 @Component
@@ -42,7 +42,16 @@ public class Menu {
     Scanner sc = new Scanner(System.in);
     int selectedOption;
 
+    /**
+     * Exibe o menu principal e gerencia o fluxo de navegação do usuário.
+     * Inicia o polling do webhook para receber callbacks de transações.
+     *
+     * @throws IOException se ocorrer erro de I/O durante a execução
+     * @throws InterruptedException se a thread principal for interrompida
+     */
     public void mainMenu() throws IOException, InterruptedException {
+        callback.startPolling(); // chama o polling no webhook
+
         do {
             System.out.print("1) Pagar  2) Cancelar transação\nDigite a opção: ");
             selectedOption = sc.nextInt();
@@ -61,6 +70,11 @@ public class Menu {
         } while (selectedOption != 3);
     }
 
+    /**
+     * Exibe o menu de tipos de pagamento e direciona para o fluxo correspondente.
+     *
+     * @param command comando de pagamento a ser executado
+     */
     private void paymentTypes(Command command) throws IOException, InterruptedException {
         do {
             System.out.print("1) Debito   2) Credito  3) Pix  4) Voltar\nDigite a opção: ");
@@ -87,8 +101,11 @@ public class Menu {
         } while (selectedOption != 4);
     }
 
+    /**
+     * Permite ao usuário consultar o resultado da última transação realizada.
+     * Exibe o payload da transação ou aguarda o processamento caso ainda não esteja disponível.
+     */
     private void getTransaction() throws IOException, InterruptedException {
-        callback.startPolling();
         int selectedOption = -1;
         do {
             if (payload.getPayload() == null || payload.getPayload().isEmpty()) {
@@ -102,7 +119,7 @@ public class Menu {
 
             switch (selectedOption) {
                 case 1:
-                    System.out.println("########## PAYLOAD ##########\n" + payload.getPayload() + "\n");
+                    System.out.println("PAYLOAD\n" + payload.getPayload());
                     break;
                 case 0:
                     System.out.println("Voltando ao menu anterior...\n");
@@ -113,6 +130,10 @@ public class Menu {
         } while (selectedOption != 0);
     }
 
+    /**
+     * Solicita ao usuário o valor da transação.
+     * @return valor informado pelo usuário
+     */
     private float setValue() {
         sc.nextLine();
         System.out.print("Digite o valor desejado: ");
@@ -143,8 +164,11 @@ public class Menu {
         services.transactionRequest(command, value, PaymentMethod.PIX, PaymentType.DEBIT, PaymentMethodSubType.FULL_PAYMENT);
     }
 
+    /**
+     * Realiza o cancelamento de uma transação.
+     */
     private void cancellment(Command command) throws IOException, InterruptedException {
-        //Todos parametros exceto o command serão ignorados
+        // todos parametros exceto o command serão ignorados
         services.transactionRequest(command, 0, PaymentMethod.PIX, PaymentType.DEBIT, PaymentMethodSubType.FINANCED_NO_FEES);
     }
 }
