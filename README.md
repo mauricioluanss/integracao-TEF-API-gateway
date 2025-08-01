@@ -4,13 +4,15 @@ Antes de mais nada, preciso deixar claro que o objetivo de desenvolver este proj
 
 Sendo assim, este projeto implementa a lógica essencial para integrar um sistema de automação comercial ao Checkout de pagamentos da empresa que trabalho, via API Gateway. Além disso, tem um menu interativo para testar chamdas e consultar as transações.
 
+**🔄 Atualização Recente:** O projeto foi atualizado para usar o [webhook.site](https://webhook.site) ao invés do ngrok para receber callbacks das transações, simplificando a configuração e melhorando a experiência de desenvolvimento.
+
 ## Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
 - **Java 21** - [Download do JDK 21](https://adoptium.net/temurin/releases/?version=21)
 - **Maven 3.6+** - [Download do Maven](https://maven.apache.org/download.cgi)
-- **Ngrok** - [Download do Ngrok](https://ngrok.com/download) (para expor a aplicação localmente)
+- **Webhook.site** - [Acesse aqui](https://webhook.site) (para receber callbacks das transações)
 
 
 ## Tecnologias Utilizadas
@@ -18,7 +20,7 @@ Antes de começar, certifique-se de ter instalado:
 - Java 21
 - Spring Boot 3.4.3
 - Maven
-- Ngrok (para exposição pública da aplicação)
+- Webhook.site (para receber callbacks das transações)
 
 ## Configuração do Ambiente
 
@@ -39,8 +41,8 @@ Antes de começar, certifique-se de ter instalado:
    PAYER_USERNAME=seu_username_aqui
    PASSWORD=sua_senha_aqui
 
-   # URL de callback (será configurada após iniciar o ngrok)
-   CALLBACK_URL=https://seu-tunnel-ngrok.ngrok.io/webhook
+   # URL de callback (webhook.site)
+   CALLBACK_URL=https://webhook.site/abc123-def456
 
    # Endpoints da API de pagamento
    TOKEN_ENDPOINT_URL=https://api.exemplo.com/auth/token
@@ -60,24 +62,17 @@ Antes de começar, certifique-se de ter instalado:
    logging.level.org.apache.tomcat=warn
    ```
 
-### 2. Configuração do Ngrok
+### 2. Configuração do Webhook.site
 
-1. **Baixe e configure o Ngrok:**
-   - Faça download do [Ngrok](https://ngrok.com/download)
-   - Extraia o arquivo na pasta do projeto
-   - Registre-se em [ngrok.com](https://ngrok.com) e obtenha seu authtoken
+**📖 Para instruções detalhadas, consulte o arquivo [WEBHOOK_SETUP.md](WEBHOOK_SETUP.md)**
 
-2. **Configure o authtoken:**
-   ```bash
-   ./ngrok authtoken SEU_AUTHTOKEN_AQUI
-   ```
+1. **Acesse o Webhook.site:**
+   - Vá para [https://webhook.site](https://webhook.site)
+   - Uma URL única será gerada automaticamente (exemplo: `https://webhook.site/abc123-def456`)
 
-3. **Exponha a aplicação (execute em um terminal separado):**
-   ```bash
-   ./ngrok http 8080
-   ```
+2. **Copie a URL gerada** e atualize o `CALLBACK_URL` no `application.properties`
 
-4. **Copie a URL HTTPS gerada** e atualize o `CALLBACK_URL` no `application.properties`
+3. **Mantenha a página do webhook.site aberta** para visualizar os callbacks recebidos
 
 
 
@@ -101,6 +96,12 @@ Digite a opção:
 
 3. **Consultar transação** - Visualiza o ultimo payload de retorno da transação
 
+**Visualizando os Callbacks no Webhook.site:**
+- Mantenha a página do webhook.site aberta no navegador
+- Cada transação realizada aparecerá como uma nova requisição na página
+- Clique em qualquer requisição para ver os detalhes completos do payload
+- Os dados incluem headers, body e timestamp da transação
+
 ## Fluxo de Funcionamento padrão
 
 1. **Disparo da Venda:**  
@@ -118,7 +119,7 @@ Digite a opção:
    Após o cliente finalizar o pagamento, o Checkout envia uma requisição ao Gateway de TEF, que processa a transação e retorna um `payload` com os dados da resposta.
 
 4. **Retorno à Automação (Callback):**  
-   A API do Checkout, ao receber o `payload` de resposta, envia os dados para a URL de callback previamente informada pela automação. Essa URL trata o retorno da transação no sistema de origem.
+   A API do Checkout, ao receber o `payload` de resposta, envia os dados para a URL de callback previamente informada pela automação. No nosso caso, essa URL é do webhook.site, que recebe e exibe os dados da transação para visualização.
 
 
 ## Estrutura do Projeto
@@ -127,7 +128,7 @@ Digite a opção:
 integracao-api-gateway/
 ├── src/main/java/com/apigateway/apigateway/main/
 │   ├── controller/
-│   │   └── CallbackController.java          # Endpoint para receber callbacks
+│   │   └── CallbackController.java          # Endpoint para callbacks (desabilitado - usando webhook.site)
 │   ├── dto/                                 # Data Transfer Objects
 │   ├── entity/                              # Entidades do sistema
 │   ├── enums/                               # Enumerações
@@ -141,6 +142,7 @@ integracao-api-gateway/
 │   └── Menu.java                            # Menu interativo
 ├── src/main/resources/
 │   └── application.properties.example       # Configurações de exemplo
+├── WEBHOOK_SETUP.md                         # Instruções para webhook.site
 ├── pom.xml                                  # Dependências Maven
 └── README.md
 ```

@@ -1,5 +1,6 @@
 package com.apigateway.apigateway.main;
 
+import com.apigateway.apigateway.main.controller.Callback;
 import com.apigateway.apigateway.main.entity.Payload;
 import com.apigateway.apigateway.main.enums.parametrosPagamento.Command;
 import com.apigateway.apigateway.main.enums.parametrosPagamento.PaymentMethod;
@@ -34,6 +35,9 @@ public class Menu {
 
     @Autowired
     private Payload payload;
+
+    @Autowired
+    private Callback callback;
 
     Scanner sc = new Scanner(System.in);
     int selectedOption;
@@ -84,6 +88,7 @@ public class Menu {
     }
 
     private void getTransaction() throws IOException, InterruptedException {
+        callback.startPolling();
         int selectedOption = -1;
         do {
             if (payload.getPayload() == null || payload.getPayload().isEmpty()) {
