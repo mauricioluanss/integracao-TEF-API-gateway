@@ -24,11 +24,50 @@ Sendo assim, este projeto implementa a lógica essencial para integrar um sistem
    - O sistema faz polling na URL do webhook para buscar o resultado da transação e exibe no menu.
 
 ## Configuração Rápida
-1. Copie e edite o arquivo de propriedades:
+1. Copie o arquivo de propriedades:
    ```bash
    cp src/main/resources/application.properties.example src/main/resources/application.properties
    # Edite com suas credenciais e a URL do webhook.site
    ```
+
+2. **Edite o arquivo `application.properties`** com suas credenciais:
+
+   ```properties
+   spring.application.name=apigateway
+
+   # Credenciais de login
+   CLIENT_ID=
+   PAYER_USERNAME=
+   PASSWORD=
+   
+   # URL de callback (webhook.site)
+   # Acesse https://webhook.site e copie a URL única gerada
+   CALLBACK_URL=
+   
+   #URL DE CALLBACK PARA FAZER O POLLING
+   #exemlo: https://webhook.site/token/as51-casdfdsa151-asdadsa-ASKDL12/requests
+   POOLING_CALLBACK_URL=
+   
+   # Endpoints da API de pagamento
+   TOKEN_ENDPOINT_URL=
+   TRANSACTION_ENDPOINT_URL=
+   
+   # Identificação da Empresa, Loja e terminal (checkout)
+   COMPANY_ID=
+   STORE_ID=
+   TERMINAL_ID=
+   
+   AUTOMATION_NAME=
+
+   ### PARA REDUZIR OS LOGS NO CONSOLE E MELHORAR A VISUALIZAÇÃO ###
+   # Reduz o log do Spring Boot para WARN
+   logging.level.org.springframework=warn
+   # Reduz o log do Tomcat para WARN
+   logging.level.org.apache.catalina=warn
+   logging.level.org.apache.coyote=warn
+   logging.level.org.apache.tomcat=warn
+   ```
+
 2. Execute a aplicação.
 
 3. Acesse [webhook.site](https://webhook.site), copie a URL gerada e configure no arquivo de propriedades.
