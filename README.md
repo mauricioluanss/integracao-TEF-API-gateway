@@ -4,6 +4,8 @@ Antes de mais nada, preciso deixar claro que o objetivo de desenvolver este proj
 
 Sendo assim, este projeto implementa a lógica essencial para integrar um sistema de automação comercial ao Checkout de pagamentos da empresa que trabalho, via API Gateway. Além disso, tem um menu interativo para testar chamdas e consultar as transações.
 
+Obs: Ainda estou ajustando alguns detalhes no menu para controlar a consulta das transações e o cancelamento. Mas em suma, funciona.
+
 ## Tecnologias
 - Java 21
 - Spring Boot
@@ -19,9 +21,11 @@ Sendo assim, este projeto implementa a lógica essencial para integrar um sistem
 2. **Processo de Pagamento:**
    - O usuário escolhe o tipo de pagamento e informa o valor.
    - A aplicação envia a requisição para o endpoint de pagamento.
+   - O checkout payer sobe na tela com a transação e aciona o pinpad.
+   - cliente paga.
    - O resultado é enviado via callback para a URL configurada (webhook.site).
 3. **Callback:**
-   - O sistema faz polling na URL do webhook para buscar o resultado da transação e exibe no menu.
+   - A aplicação faz o polling na URL do webhook para buscar o resultado da transação e exibe no menu.
 
 ## Configuração Rápida
 1. Copie o arquivo de propriedades:
