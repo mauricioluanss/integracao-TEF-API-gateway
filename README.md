@@ -42,10 +42,11 @@ Sendo assim, este projeto implementa a lógica essencial para integrar um sistem
    
    # URL de callback (webhook.site)
    # Acesse https://webhook.site e copie a URL única gerada
+   #ex: https://webhook.site/dc80c03e-6e14-49a0-aa3b-14915cafb999
    CALLBACK_URL=
    
    #URL DE CALLBACK PARA FAZER O POLLING
-   #exemlo: https://webhook.site/token/as51-casdfdsa151-asdadsa-ASKDL12/requests
+   #exemlo: https://webhook.site/token/dc80c03e-6e14-49a0-aa3b-14915cafb999/requests
    POOLING_CALLBACK_URL=
    
    # Endpoints da API de pagamento
@@ -68,9 +69,8 @@ Sendo assim, este projeto implementa a lógica essencial para integrar um sistem
    logging.level.org.apache.tomcat=warn
    ```
 
-2. Execute a aplicação.
+3. Execute a aplicação.
 
-3. Acesse [webhook.site](https://webhook.site), copie a URL gerada e configure no arquivo de propriedades.
 
 ## Estrutura Principal
 ```
